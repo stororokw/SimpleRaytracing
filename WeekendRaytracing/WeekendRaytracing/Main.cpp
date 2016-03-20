@@ -8,13 +8,24 @@
 #include "RNG.h"
 #include "Camera.h"
 
+vec3 random_in_unit_sphere()
+{
+	vec3 p;
+	do
+	{
+		// make sure point in unit cube is in the range of -1 to 1
+		p = 2.0f * vec3(RNG::random(), RNG::random(), RNG::random()) - vec3(1, 1, 1);
+	} while (dot(p, p) >= 1.0f);
+	return p;
+}
+
 vec3 colour(const ray& r, hitable* world)
 {
 	hit_record rec;
 	if (world->hit(r, 0.0f, INFINITY, rec))
 	{
-		vec3 normal = rec.normal;
-		return 0.5f * (normal + vec3(1, 1, 1));
+		vec3 s = rec.p + rec.normal + random_in_unit_sphere();
+		return 0.5 * colour(ray(rec.p, s - rec.p), world);
 	}
 	vec3 unit_direction = unit_vector(r.direction());
 	// map to the range 0-1
@@ -56,6 +67,8 @@ int main()
 				c+= colour(r, world);
 			}
 			c /= float(ns);
+			// gamma correct
+			c = vec3(sqrtf(c[0]), sqrtf(c[1]), sqrtf(c[2]));
 			int ir = int(255.99 * c[0]);
 			int ig = int(255.99 * c[1]);
 			int ib = int(255.99 * c[2]);
