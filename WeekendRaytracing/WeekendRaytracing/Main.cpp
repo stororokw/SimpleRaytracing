@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include "Vec3.h"
 
 int main()
 {
@@ -11,15 +12,10 @@ int main()
 	{
 		for (int col = 0; col < nx; ++col)
 		{
-			float u = float(col) / float(nx);
-			float v = float(row) / float(ny);
-
-			float r = float(col) / float(nx);
-			float g = float(row) / float(ny);
-			float b = 0.2;
-			int ir = int(255.99 * r);
-			int ig = int(255.99 * g);
-			int ib = int(255.99 * b);
+			vec3 c(float(col) / float(nx), float(row) / float(ny), 0.2);
+			int ir = int(255.99 * c[0]);
+			int ig = int(255.99 * c[1]);
+			int ib = int(255.99 * c[2]);
 			output << ir << " " << ig << " " << ib << "\n";
 		}
 	}
