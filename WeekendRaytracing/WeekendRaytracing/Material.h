@@ -11,6 +11,15 @@ public:
 	virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const = 0;
 	static vec3 reflect(const vec3& v, const vec3& n);
 	static bool refract(const vec3& v, const vec3& n, float ior, vec3& refracted);
+	static float schlick_fresnel(float costheta, float ior)
+	{
+		// air
+		float eta_i = 1.0f;
+		float eta_t = ior / eta_i;
+		// probability of reflection at normal incidence
+		float r0 = powf((eta_i - eta_t) / (eta_i + eta_t), 2.0f);
+		return r0 + (1 - r0) * powf(1 - costheta, 5.0f);
+	}
 };
 
 inline vec3 material::reflect(const vec3& v, const vec3& n)
@@ -33,3 +42,5 @@ inline bool material::refract(const vec3& v, const vec3& normal, float eta, vec3
 	refracted = eta * (v - normal * dt) - normal * sqrtf(discriminant);
 	return true;
 }
+
+
