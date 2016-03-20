@@ -2,6 +2,8 @@
 
 #include "Hitable.h"
 
+class material;
+
 class hitable_list : public hitable
 {
 public:

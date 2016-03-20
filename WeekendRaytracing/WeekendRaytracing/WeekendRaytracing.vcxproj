@@ -84,6 +84,9 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Hitable.h" />
     <ClInclude Include="HitableList.h" />
+    <ClInclude Include="lambertian.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="metal.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RNG.h" />
     <ClInclude Include="Sphere.h" />

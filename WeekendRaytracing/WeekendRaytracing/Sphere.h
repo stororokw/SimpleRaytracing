@@ -8,12 +8,13 @@ class sphere : public hitable
 public:
 	sphere();
 
-	sphere(vec3 center, float radius);
+	sphere(vec3 center, float radius, material* mat_ptr);
 
 	bool hit(const ray& ray, float t_min, float t_max, hit_record& rec) const override;
 private:
 	vec3 center;
 	float radius;
+	material* mat_ptr;
 };
 
 inline sphere::sphere()
@@ -21,9 +22,10 @@ inline sphere::sphere()
 
 }
 
-inline sphere::sphere(vec3 center, float radius)
+inline sphere::sphere(vec3 center, float radius, material* mat_ptr)
 	: center(center),
-	  radius(radius)
+	  radius(radius),
+	  mat_ptr(mat_ptr)
 {}
 
 inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
@@ -42,6 +44,7 @@ inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec)
 			rec.t = temp;
 			rec.p = r(rec.t);
 			rec.normal = (rec.p - center) / radius;
+			rec.mat_ptr = mat_ptr;
 			return true;
 		}
 
@@ -51,6 +54,7 @@ inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec)
 			rec.t = temp;
 			rec.p = r(rec.t);
 			rec.normal = (rec.p - center) / radius;
+			rec.mat_ptr = mat_ptr;
 			return true;
 		}
 	}

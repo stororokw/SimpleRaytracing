@@ -7,25 +7,21 @@
 #include "HitableList.h"
 #include "RNG.h"
 #include "Camera.h"
+#include "lambertian.h"
+#include "metal.h"
 
-vec3 random_in_unit_sphere()
-{
-	vec3 p;
-	do
-	{
-		// make sure point in unit cube is in the range of -1 to 1
-		p = 2.0f * vec3(RNG::random(), RNG::random(), RNG::random()) - vec3(1, 1, 1);
-	} while (dot(p, p) >= 1.0f);
-	return p;
-}
-
-vec3 colour(const ray& r, hitable* world)
+vec3 colour(const ray& r, hitable* world, int depth)
 {
 	hit_record rec;
 	if (world->hit(r, 0.0f, INFINITY, rec))
 	{
-		vec3 s = rec.p + rec.normal + random_in_unit_sphere();
-		return 0.5 * colour(ray(rec.p, s - rec.p), world);
+		ray scattered_ray;
+		vec3 attenuation;
+		if (depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered_ray))
+		{
+			return attenuation * colour(scattered_ray, world, depth + 1);
+		} 
+		return vec3(0, 0, 0);
 	}
 	vec3 unit_direction = unit_vector(r.direction());
 	// map to the range 0-1
@@ -47,11 +43,13 @@ int main()
 	vec3 vertical(0.0f, 2.0f, 0.0f);
 	vec3 origin(0.0f, 0.0f, 0.0f);
 
-	hitable* geometry[2];
-	geometry[0] = new sphere(vec3(0, 0, -1), 0.5);
-	geometry[1] = new sphere(vec3(0, -100.5, -1), 100);
+	hitable* geometry[4];
+	geometry[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
+	geometry[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
+	geometry[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2)));
+	geometry[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.8, 0.8)));
 
-	hitable* world = new hitable_list(geometry, 2);
+	hitable* world = new hitable_list(geometry, 4);
 	camera cam;
 	output << "P3\n" << nx << " " << ny << "\n255\n";
 	for (int row = ny - 1; row >= 0; --row)
@@ -64,7 +62,7 @@ int main()
 				float u = float(col + RNG::random()) / float(nx);
 				float v = float(row + RNG::random()) / float(ny);
 				ray r = cam.get_ray(u, v);
-				c+= colour(r, world);
+				c+= colour(r, world, 0);
 			}
 			c /= float(ns);
 			// gamma correct
