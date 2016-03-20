@@ -159,3 +159,7 @@ inline vec3 unit_vector(vec3 v1)
 	return v1 / d;
 }
 
+inline vec3 lerp(float t, const vec3& v1, const vec3& v2)
+{
+	return (1 - t) * v1 + t * v2;
+}
