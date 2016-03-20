@@ -10,18 +10,25 @@ float hit_sphere(const vec3& center, float radius, const ray& r)
 	float b = 2.0f * dot(oc, r.direction());
 	float c = dot(oc, oc) - radius * radius;
 	float discriminant = b * b - 4.0f * a * c;
-	return discriminant > 0.0f;
+	if (discriminant < 0.0f)
+	{
+		return -1.0f;
+	}
+	return (-b - sqrtf(discriminant)) / (2.0f * a);
 }
 
 vec3 colour(const ray& r)
 {
-	if (hit_sphere(vec3(0, 0, -1), 0.5, r))
+	vec3 centre = vec3(0, 0, -1);
+	float t = hit_sphere(centre, 0.5, r);
+	if (t > 0.0f)
 	{
-		return vec3(1, 0, 0);
+		vec3 normal = unit_vector(r(t) - centre);
+		return 0.5f * (normal + vec3(1, 1, 1));
 	}
 	vec3 unit_direction = unit_vector(r.direction());
 	// map to the range 0-1
-	float t = 0.5 * (unit_direction.y() + 1.0);
+	t = 0.5 * (unit_direction.y() + 1.0);
 	vec3 white = vec3(1, 1, 1);
 	vec3 blue = vec3(0.5, 0.7, 1.0);
 	return lerp(t, white, blue);
