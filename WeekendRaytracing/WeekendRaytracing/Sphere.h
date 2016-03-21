@@ -43,7 +43,7 @@ inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec)
 		{
 			rec.t = temp;
 			rec.p = r(rec.t);
-			rec.normal = (rec.p - center) / radius;
+			rec.normal = unit_vector(rec.p - center);
 			rec.mat_ptr = mat_ptr;
 			return true;
 		}
@@ -53,7 +53,7 @@ inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec)
 		{
 			rec.t = temp;
 			rec.p = r(rec.t);
-			rec.normal = (rec.p - center) / radius;
+			rec.normal = unit_vector(rec.p - center);
 			rec.mat_ptr = mat_ptr;
 			return true;
 		}

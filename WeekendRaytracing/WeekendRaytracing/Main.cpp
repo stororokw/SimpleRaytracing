@@ -14,7 +14,7 @@
 vec3 colour(const ray& r, hitable* world, int depth)
 {
 	hit_record rec;
-	if (world->hit(r, 0.0f, INFINITY, rec))
+	if (world->hit(r, 1e-6, INFINITY, rec))
 	{
 		ray scattered_ray;
 		vec3 attenuation;
@@ -48,7 +48,7 @@ int main()
 	geometry[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
 	geometry[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
 	geometry[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.3));
-	geometry[3] = new sphere(vec3(-1, 0, -1), 0.5, new dielectric(1.5));
+	geometry[3] = new sphere(vec3(-1, 0, -1), 0.5, new dielectric(1));
 
 	hitable* world = new hitable_list(geometry, 4);
 	camera cam;
