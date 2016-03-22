@@ -51,7 +51,8 @@ int main()
 	geometry[3] = new sphere(vec3(-1, 0, -1), 0.5, new dielectric(1.5));
 
 	hitable* world = new hitable_list(geometry, 4);
-	camera cam(vec3(-2,2,1),vec3(0,0,-1),vec3(0,1,0), 15, float(nx)/ ny);
+	//camera cam(vec3(-2,2,1),vec3(0,0,-1),vec3(0,1,0), 15, float(nx)/ ny);
+	camera cam(vec3(3, 3, 2), vec3(0, 0, -1), vec3(0, 1, 0), 20, float(nx) / ny, 2.0, (vec3(3,3,2) - vec3(0,0,-1)).length());
 	output << "P3\n" << nx << " " << ny << "\n255\n";
 	for (int row = ny - 1; row >= 0; --row)
 	{
