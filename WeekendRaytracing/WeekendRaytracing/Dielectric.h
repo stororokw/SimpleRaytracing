@@ -48,12 +48,12 @@ inline bool dielectric::scatter(const ray& r_in, const hit_record& rec, vec3& at
 	float reflection_prob = schlick_fresnel(costheta, eta);
 	if (refract(wo, outward_normal, eta, refracted))
 	{
-		scattered = ray(rec.p, refracted);
+		scattered = ray(rec.p, refracted, r_in.time());
 	}
 
 	if (RNG::random() < reflection_prob)
 	{
-		scattered = ray(rec.p, reflected);	
+		scattered = ray(rec.p, reflected, r_in.time());
 	}
 	
 	return true;

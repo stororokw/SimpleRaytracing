@@ -6,7 +6,7 @@
 class camera
 {
 public:
-	camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect,float aperture, float focus_distance);
+	camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect,float aperture, float focus_distance, float t0, float t1);
 	ray get_ray(float U, float V);
 
 private:
@@ -15,10 +15,14 @@ private:
 	vec3 horizontal;
 	vec3 vertical;
 	float lens_radius;
+	float time0;
+	float time1;
 };
 
-inline camera::camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect, float aperture, float focus_distance)
+inline camera::camera(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect, float aperture, float focus_distance, float t0, float t1)
 {
+	time0 = t0;
+	time1 = t1;
 	lens_radius = aperture / 2;
 	vec3 u, v, w;
 	float theta = vfov * 3.14 / 180;
@@ -38,5 +42,6 @@ inline ray camera::get_ray(float U, float V)
 {
 	vec3 rd = lens_radius * RNG::random_in_unit_disc();
 	vec3 offset = vec3(U * rd.x(), V * rd.y(), 0);
-	return ray(origin + offset, unit_vector(lower_left_corner + U * horizontal + V * vertical - origin - offset));
+	float time = time0 + RNG::random() * (time1 - time0);
+	return ray(origin + offset, unit_vector(lower_left_corner + U * horizontal + V * vertical - origin - offset), time);
 }

@@ -10,6 +10,7 @@
 #include "lambertian.h"
 #include "metal.h"
 #include "Dielectric.h"
+#include "MovingSphere.h"
 
 vec3 colour(const ray& r, hitable* world, int depth)
 {
@@ -45,14 +46,14 @@ int main()
 	vec3 origin(0.0f, 0.0f, 0.0f);
 
 	hitable* geometry[4];
-	geometry[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
+	geometry[0] = new moving_sphere(vec3(0, 0, -1), vec3(2,0,-1), 0, 1, 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
 	geometry[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
 	geometry[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.3));
 	geometry[3] = new sphere(vec3(-1, 0, -1), 0.5, new dielectric(1.5));
 
 	hitable* world = new hitable_list(geometry, 4);
 	//camera cam(vec3(-2,2,1),vec3(0,0,-1),vec3(0,1,0), 15, float(nx)/ ny);
-	camera cam(vec3(3, 3, 2), vec3(0, 0, -1), vec3(0, 1, 0), 20, float(nx) / ny, 2.0, (vec3(3,3,2) - vec3(0,0,-1)).length());
+	camera cam(vec3(3, 3, 2), vec3(0, 0, -1), vec3(0, 1, 0), 20, float(nx) / ny, 2.0, (vec3(3,3,2) - vec3(0,0,-1)).length(), 0, 1);
 	output << "P3\n" << nx << " " << ny << "\n255\n";
 	for (int row = ny - 1; row >= 0; --row)
 	{
