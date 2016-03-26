@@ -121,6 +121,7 @@
     <ClInclude Include="CheckerTexture.h" />
     <ClInclude Include="ConstantTexture.h" />
     <ClInclude Include="Dielectric.h" />
+    <ClInclude Include="EmitterMaterial.h" />
     <ClInclude Include="Hitable.h" />
     <ClInclude Include="HitableList.h" />
     <ClInclude Include="ImageTexture.h" />
@@ -130,6 +131,7 @@
     <ClInclude Include="metal.h" />
     <ClInclude Include="MovingSphere.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="Rectangle.h" />
     <ClInclude Include="RNG.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Texture.h" />

@@ -9,6 +9,7 @@ class material
 {
 public:
 	virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const = 0;
+	virtual vec3 emitted(float u, float v, const vec3& p) const;
 	static vec3 reflect(const vec3& v, const vec3& n);
 	static bool refract(const vec3& v, const vec3& n, float ior, vec3& refracted);
 	static float schlick_fresnel(float costheta, float ior)
@@ -21,6 +22,11 @@ public:
 		return r0 + (1 - r0) * powf(1 - fabsf(costheta), 5.0f);
 	}
 };
+
+inline vec3 material::emitted(float u, float v, const vec3& p) const
+{
+	return vec3(0, 0, 0);
+}
 
 inline vec3 material::reflect(const vec3& v, const vec3& n)
 {

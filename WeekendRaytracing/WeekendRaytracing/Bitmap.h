@@ -75,9 +75,9 @@ inline void Bitmap::SaveAsPPM3(char* filepath, float gamma)
 			// gamma correct
 			//c = vec3(sqrtf(c[0]), sqrtf(c[1]), sqrtf(c[2])).clamp();
 			c = c ^ gamma;
-			int ir = int(255.99 * c[0]);
-			int ig = int(255.99 * c[1]);
-			int ib = int(255.99 * c[2]);
+			int ir = int(clampf(255.99 * c[0], 0, 255));
+			int ig = int(clampf(255.99 * c[1], 0, 255));
+			int ib = int(clampf(255.99 * c[2], 0, 255));
 			output << ir << " " << ig << " " << ib << "\n";
 		}
 	}
@@ -102,9 +102,9 @@ inline void Bitmap::SaveAsPPM6(char* filepath, float gamma)
 		{
 			c = d[row][col];
 			c = c ^ gamma;
-			r = c[0] * 255;
-			g = c[1] * 255;
-			b = c[2] * 255;
+			r = clampf(c[0] * 255, 0, 255);
+			g = clampf(c[1] * 255, 0, 255);
+			b = clampf(c[2] * 255, 0, 255);
 			ofs << r << g << b;
 		}
 	}

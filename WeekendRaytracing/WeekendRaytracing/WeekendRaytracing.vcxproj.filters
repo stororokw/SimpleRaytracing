@@ -16,6 +16,9 @@
     <Filter Include="Header Files\Textures">
       <UniqueIdentifier>{227857d5-d581-40df-937b-a4e811ed3ca2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Materials">
+      <UniqueIdentifier>{45722981-a614-4ac9-9ac3-6a69186e2204}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -47,15 +50,6 @@
     <ClInclude Include="Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lambertian.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="metal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dielectric.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MovingSphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -84,6 +78,21 @@
       <Filter>Header Files\Textures</Filter>
     </ClInclude>
     <ClInclude Include="Mapping.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dielectric.h">
+      <Filter>Header Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="metal.h">
+      <Filter>Header Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="lambertian.h">
+      <Filter>Header Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="EmitterMaterial.h">
+      <Filter>Header Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Rectangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

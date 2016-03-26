@@ -18,6 +18,23 @@
 #include "ConstantTexture.h"
 #include "CheckerTexture.h"
 #include "ImageTexture.h"
+#include "EmitterMaterial.h"
+#include "Rectangle.h"
+
+hitable** simple_light(int& size)
+{
+	texture* green = new constant_texture(vec3(0.2, 0.3, 0.1));
+	texture* gray = new constant_texture(vec3(0.9, 0.9, 0.9));
+
+	texture* checker = new checker_texture(green, gray);
+	hitable** l = new hitable*[4];
+	l[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(checker));
+	l[1] = new sphere(vec3(0, 2, 0), 2, new lambertian(checker));
+	l[2] = new sphere(vec3(0, 7, 0), 2, new emitter_material(new constant_texture(vec3(4,4,4))));
+	l[3] = new rectangle(3, 5, 1, 3, -2, new emitter_material(new constant_texture(vec3(4, 4, 4))));
+	size = 4;
+	return l;
+}
 
 hitable** two_spheres(int& size)
 {
@@ -72,7 +89,7 @@ hitable** random_scene(int& size)
 	}
 
 	//texture* d = new constant_texture(vec3(0.4, 0.2, 0.1));
-	Bitmap* b = Bitmap::LoadPPM6(R"(texture.pbm)");
+	Bitmap* b = Bitmap::LoadPPM6(R"(texture.ppm)");
 	texture* d = new image_texture(b);
 	list[i++] = new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5));
 	list[i++] = new sphere(vec3(-4, 1, 0), 1.0, new lambertian(d));
@@ -88,18 +105,23 @@ vec3 colour(const ray& r, hitable* world, int depth)
 	{
 		ray scattered_ray;
 		vec3 attenuation;
+		vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
 		if (depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered_ray))
 		{
-			return attenuation * colour(scattered_ray, world, depth + 1);
+			return emitted + attenuation * colour(scattered_ray, world, depth + 1);
 		} 
-		return vec3(0, 0, 0);
+		else
+		{
+			return emitted;
+		}
 	}
-	vec3 unit_direction = unit_vector(r.direction());
-	// map to the range 0-1
-	float t = 0.5 * (unit_direction.y() + 1.0);
-	vec3 white = vec3(1, 1, 1);
-	vec3 blue = vec3(0.5, 0.7, 1.0);
-	return lerp(t, white, blue);
+	return vec3(0, 0, 0);
+	//vec3 unit_direction = unit_vector(r.direction());
+	//// map to the range 0-1
+	//float t = 0.5 * (unit_direction.y() + 1.0);
+	//vec3 white = vec3(1, 1, 1);
+	//vec3 blue = vec3(0.5, 0.7, 1.0);
+	//return lerp(t, white, blue);
 }
 
 int main()
@@ -109,11 +131,14 @@ int main()
 	int ns = 100;
 	Bitmap bitmap(nx, ny);
 	int size;
-	hitable** scene = random_scene(size);
+	//hitable** scene = random_scene(size);
 	//hitable** scene = two_spheres(size);
+	hitable** scene = simple_light(size);
 	hitable* world = new bvh_node(scene, size, 0, 1);
 
-	camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);	
+	//camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);
+	// camera for simple_light
+	camera cam(vec3(13, 2, 20), vec3(0, 0, 0), vec3(0, 1, 0), 40, float(nx) / ny, 0, 10, 0, 1);
 	omp_set_nested(1);
 	Timer timer;
 	timer.Start();
