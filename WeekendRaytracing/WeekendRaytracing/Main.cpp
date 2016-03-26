@@ -12,6 +12,9 @@
 #include "Dielectric.h"
 #include "MovingSphere.h"
 #include "BVH.h"
+#include "Bitmap.h"
+#include "omp.h"
+#include "Timer.h"
 
 hitable** random_scene(int& size)
 {
@@ -81,19 +84,19 @@ int main()
 	int nx = 200;
 	int ny = 100;
 	int ns = 100;
-	std::ofstream output("image.ppm");
-
-	vec3 lower_left_corner(-2.0f, -1.0f, -1.0f);
-	vec3 horizontal(4.0f, 0.0f, 0.0f);
-	vec3 vertical(0.0f, 2.0f, 0.0f);
-	vec3 origin(0.0f, 0.0f, 0.0f);
+	Bitmap bitmap(nx, ny, 1 / 2.2);
 
 	int size;
 	hitable** scene = random_scene(size);
-	hitable* world = new bvh_node(scene, size, 0, 1e11);
+	hitable* world = new bvh_node(scene, size, 0, 1);
+
 	//camera cam(vec3(-2,2,1),vec3(0,0,-1),vec3(0,1,0), 15, float(nx)/ ny);
 	camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);
-	output << "P3\n" << nx << " " << ny << "\n255\n";
+	omp_set_nested(1);
+	Timer timer;
+	timer.Start();
+
+#pragma omp parallel for schedule(dynamic, 1)
 	for (int row = ny - 1; row >= 0; --row)
 	{
 		for (int col = 0; col < nx; ++col)
@@ -107,15 +110,12 @@ int main()
 				c+= colour(r, world, 0);
 			}
 			c /= float(ns);
-			// gamma correct
-			c = vec3(sqrtf(c[0]), sqrtf(c[1]), sqrtf(c[2])).clamp();
-			int ir = int(255.99 * c[0]);
-			int ig = int(255.99 * c[1]);
-			int ib = int(255.99 * c[2]);
-			output << ir << " " << ig << " " << ib << "\n";
+			bitmap.SetPixel(col, row, c);
 		}
 	}
-	output.close();
-
+	
+	timer.Stop();
+	std::cout << timer.GetElapsedSeconds() << std::endl;
+	bitmap.SaveAsPPM("image1.ppm");
 	return 0;
 }
