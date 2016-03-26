@@ -17,6 +17,7 @@
 #include "Timer.h"
 #include "ConstantTexture.h"
 #include "CheckerTexture.h"
+#include "ImageTexture.h"
 
 hitable** two_spheres(int& size)
 {
@@ -70,7 +71,9 @@ hitable** random_scene(int& size)
 		}
 	}
 
-	texture* d = new constant_texture(vec3(0.4, 0.2, 0.1));
+	//texture* d = new constant_texture(vec3(0.4, 0.2, 0.1));
+	Bitmap* b = Bitmap::LoadPPM6(R"(texture.pbm)");
+	texture* d = new image_texture(b);
 	list[i++] = new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5));
 	list[i++] = new sphere(vec3(-4, 1, 0), 1.0, new lambertian(d));
 	list[i++] = new sphere(vec3(4, 1, 0), 1.0, new metal(vec3(0.7, 0.6, 0.5), 0));
@@ -106,8 +109,8 @@ int main()
 	int ns = 100;
 	Bitmap bitmap(nx, ny);
 	int size;
-	//hitable** scene = random_scene(size);
-	hitable** scene = two_spheres(size);
+	hitable** scene = random_scene(size);
+	//hitable** scene = two_spheres(size);
 	hitable* world = new bvh_node(scene, size, 0, 1);
 
 	camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);	

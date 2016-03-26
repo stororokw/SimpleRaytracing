@@ -9,12 +9,14 @@ class Bitmap
 {
 public:
 	Bitmap(int width, int height);
+	int GetWidth() const;
+	int GetHeight() const;
 	vec3* operator[](int x) const;
 	vec3 GetPixel(int col, int row);
 	void SetPixel(int col, int row, const vec3& colour);
 	void SaveAsPPM3(char* filepath, float gamma = 1 / 2.2);
 	void SaveAsPPM6(char* filepath, float gamma = 1 / 2.2);
-	static Bitmap LoadPPM6(char* filepath, float gamma = 2.2);
+	static Bitmap* LoadPPM6(char* filepath, float gamma = 2.2);
 protected:
 	std::vector<vec3*> d;
 	float gamma;
@@ -33,6 +35,16 @@ inline Bitmap::Bitmap(int width, int height)
 			d[row][col] = vec3(0, 1, 0);
 		}
 	}
+}
+
+inline int Bitmap::GetWidth() const
+{
+	return width;
+}
+
+inline int Bitmap::GetHeight() const
+{
+	return height;
 }
 
 inline vec3* Bitmap::operator[](int x) const
@@ -101,7 +113,7 @@ inline void Bitmap::SaveAsPPM6(char* filepath, float gamma)
 }
 
 // Loads binary ppm file (magic number 6)
-inline Bitmap Bitmap::LoadPPM6(char* filepath, float gamma)
+inline Bitmap* Bitmap::LoadPPM6(char* filepath, float gamma)
 {
 	std::ifstream ifs(filepath, std::ios::binary | std::ios::in);
 
@@ -115,7 +127,7 @@ inline Bitmap Bitmap::LoadPPM6(char* filepath, float gamma)
 	ifs >> format;
 	ifs >> Width >> Height;
 	ifs >> MaxGray;
-	Bitmap result(Width, Height);
+	Bitmap* result = new Bitmap(Width, Height);
 
 	std::string Line;
 	unsigned char buffer[3];
@@ -135,7 +147,7 @@ inline Bitmap Bitmap::LoadPPM6(char* filepath, float gamma)
 			int b = (int)(unsigned char)buffer[2];
 			//cout << r << " " << g << " " << b << endl;
 			vec3 pixel = vec3(r / (float)MaxGray, g / (float)MaxGray, b / (float)MaxGray) ^ gamma;
-			result.SetPixel(col, row, pixel);
+			result->SetPixel(col, row, pixel);
 
 		}
 	}

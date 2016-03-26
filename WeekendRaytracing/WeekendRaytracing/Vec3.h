@@ -41,7 +41,7 @@ public:
 	inline vec3& operator*=(const float t);
 	inline vec3& operator/=(const float t);
 
-	inline vec3& operator*(const float t) const;
+	inline vec3 operator*(const float t) const;
 	inline vec3 operator/(const float t) const;
 
 	friend inline vec3 operator*(const float t, const vec3& v) 
@@ -113,7 +113,7 @@ inline vec3& vec3::operator/=(const float t)
 
 }
 
-inline vec3& vec3::operator*(const float t) const
+inline vec3 vec3::operator*(const float t) const
 {
 	return vec3(e[0] * t, e[1] * t, e[2] * t);
 }

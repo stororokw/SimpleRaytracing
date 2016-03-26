@@ -3,6 +3,7 @@
 #include "Hitable.h"
 #include "Ray.h"
 #include "AABB.h"
+#include "Mapping.h"
 
 class sphere : public hitable
 {
@@ -48,6 +49,10 @@ inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec)
 			rec.p = r(rec.t);
 			rec.normal = unit_vector(rec.p - center);
 			rec.mat_ptr = mat_ptr;
+			float u, v;
+			get_sphere_uv(rec.normal, u, v);
+			rec.u = u;
+			rec.v = v;
 			return true;
 		}
 
@@ -58,6 +63,10 @@ inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec)
 			rec.p = r(rec.t);
 			rec.normal = unit_vector(rec.p - center);
 			rec.mat_ptr = mat_ptr;
+			float u, v;
+			get_sphere_uv(rec.normal, u, v);
+			rec.u = u;
+			rec.v = v;
 			return true;
 		}
 	}

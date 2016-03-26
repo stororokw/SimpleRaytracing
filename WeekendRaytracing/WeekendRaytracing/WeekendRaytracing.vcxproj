@@ -123,7 +123,9 @@
     <ClInclude Include="Dielectric.h" />
     <ClInclude Include="Hitable.h" />
     <ClInclude Include="HitableList.h" />
+    <ClInclude Include="ImageTexture.h" />
     <ClInclude Include="lambertian.h" />
+    <ClInclude Include="Mapping.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="metal.h" />
     <ClInclude Include="MovingSphere.h" />

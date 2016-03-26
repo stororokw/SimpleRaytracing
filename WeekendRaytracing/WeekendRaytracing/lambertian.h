@@ -27,6 +27,6 @@ inline bool lambertian::scatter(const ray& r_in, const hit_record& rec, vec3& at
 {
 	vec3 s = rec.p + rec.normal + RNG::random_in_unit_sphere();
 	scattered = ray(rec.p, s - rec.p, r_in.time());
-	attenuation = albedo->value(0, 0, rec.p);
+	attenuation = albedo->value(rec.u, rec.v, rec.p);
 	return true;
 }

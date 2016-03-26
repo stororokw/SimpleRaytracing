@@ -80,5 +80,11 @@
     <ClInclude Include="CheckerTexture.h">
       <Filter>Header Files\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="ImageTexture.h">
+      <Filter>Header Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Mapping.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
