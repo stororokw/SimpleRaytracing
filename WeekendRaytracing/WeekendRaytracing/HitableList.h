@@ -18,6 +18,7 @@ public:
 	}
 
 	bool hit(const ray& ray, float t_min, float t_max, hit_record& rec) const override;
+	bool bounding_box(float t0, float t1, aabb& box) const override;
 
 	int list_size;
 	hitable** list;
@@ -39,4 +40,19 @@ inline bool hitable_list::hit(const ray& ray, float t_min, float t_max, hit_reco
 		}
 	}
 	return hit_anything;
+}
+
+inline bool hitable_list::bounding_box(float t0, float t1, aabb& box) const
+{
+	aabb b;
+	list[0]->bounding_box(t0, t1, b);
+	for (int i = 1; i < list_size; ++i)
+	{
+		aabb temp;
+		list[i]->bounding_box(t0, t1, temp);
+		b = aabb::surrounding_box(b, temp);
+	}
+	box = b;
+	return true;
+	
 }

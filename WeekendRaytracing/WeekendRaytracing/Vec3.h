@@ -1,5 +1,15 @@
 #pragma once
 #include "math.h"
+
+inline float clampf(float x, float a, float b)
+{
+	if (x < a)
+		return a;
+	if (x > b)
+		return b;
+	return x;
+}
+
 class vec3
 {
 public:
@@ -42,7 +52,7 @@ public:
 	inline float length() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
 	inline float squared_length() const { return (e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
 	inline void make_unit_vector();
-
+	vec3& clamp();
 private:
 	float e[3];
 };
@@ -116,6 +126,14 @@ inline void vec3::make_unit_vector()
 	e[0] *= d;
 	e[1] *= d;
 	e[2] *= d;
+}
+
+inline vec3& vec3::clamp()
+{
+	e[0] = clampf(e[0], 0.0f, 1.0f);
+	e[1] = clampf(e[1], 0.0f, 1.0f);
+	e[2] = clampf(e[2], 0.0f, 1.0f);
+	return *this;
 }
 
 inline vec3 operator+(const vec3& v1, const vec3& v2)

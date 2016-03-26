@@ -11,8 +11,9 @@
 #include "metal.h"
 #include "Dielectric.h"
 #include "MovingSphere.h"
+#include "BVH.h"
 
-hitable* random_scene()
+hitable** random_scene(int& size)
 {
 	int n = 500;
 	hitable** list = new hitable*[n + 1];
@@ -50,13 +51,14 @@ hitable* random_scene()
 	list[i++] = new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5));
 	list[i++] = new sphere(vec3(-4, 1, 0), 1.0, new lambertian(vec3(0.4, 0.2, 0.1)));
 	list[i++] = new sphere(vec3(4, 1, 0), 1.0, new metal(vec3(0.7, 0.6, 0.5), 0));
-	return new hitable_list(list, i);
+	size = i;
+	return list;
 }
 
 vec3 colour(const ray& r, hitable* world, int depth)
 {
 	hit_record rec;
-	if (world->hit(r, 1e-6, INFINITY, rec))
+	if (world->hit(r, 1e-5f, INFINITY, rec))
 	{
 		ray scattered_ray;
 		vec3 attenuation;
@@ -86,7 +88,9 @@ int main()
 	vec3 vertical(0.0f, 2.0f, 0.0f);
 	vec3 origin(0.0f, 0.0f, 0.0f);
 
-	hitable* world = random_scene();
+	int size;
+	hitable** scene = random_scene(size);
+	hitable* world = new bvh_node(scene, size, 0, 1e11);
 	//camera cam(vec3(-2,2,1),vec3(0,0,-1),vec3(0,1,0), 15, float(nx)/ ny);
 	camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);
 	output << "P3\n" << nx << " " << ny << "\n255\n";
@@ -104,7 +108,7 @@ int main()
 			}
 			c /= float(ns);
 			// gamma correct
-			c = vec3(sqrtf(c[0]), sqrtf(c[1]), sqrtf(c[2]));
+			c = vec3(sqrtf(c[0]), sqrtf(c[1]), sqrtf(c[2])).clamp();
 			int ir = int(255.99 * c[0]);
 			int ig = int(255.99 * c[1]);
 			int ib = int(255.99 * c[2]);

@@ -2,6 +2,7 @@
 
 #include "Hitable.h"
 #include "Ray.h"
+#include "AABB.h"
 
 class sphere : public hitable
 {
@@ -11,6 +12,8 @@ public:
 	sphere(vec3 center, float radius, material* mat_ptr);
 
 	bool hit(const ray& ray, float t_min, float t_max, hit_record& rec) const override;
+	bool bounding_box(float t0, float t1, aabb& box) const override;
+
 private:
 	vec3 center;
 	float radius;
@@ -36,7 +39,7 @@ inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec)
 	float c = dot(oc, oc) - radius * radius;
 	float discriminant = b * b - a * c;
 
-	if (discriminant > 0)
+	if (discriminant > 0.0f)
 	{
 		float temp = (-b - sqrt(discriminant)) / a;
 		if (temp < t_max && temp > t_min)
@@ -60,4 +63,11 @@ inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec)
 	}
 
 	return false;
+}
+
+inline bool sphere::bounding_box(float t0, float t1, aabb& box) const
+{
+	box = aabb(center - vec3(radius, radius, radius),
+		center + vec3(radius, radius, radius));
+	return true;
 }
