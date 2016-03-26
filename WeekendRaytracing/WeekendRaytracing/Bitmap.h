@@ -3,16 +3,18 @@
 #include "Vec3.h"
 #include <vector>
 #include <fstream>
+#include <string>
 
 class Bitmap
 {
 public:
-	Bitmap(int width, int height, float gamma = 2.2);
+	Bitmap(int width, int height);
 	vec3* operator[](int x) const;
 	vec3 GetPixel(int col, int row);
 	void SetPixel(int col, int row, const vec3& colour);
-	void SaveAsPPM(char* filepath);
-
+	void SaveAsPPM3(char* filepath, float gamma = 1 / 2.2);
+	void SaveAsPPM6(char* filepath, float gamma = 1 / 2.2);
+	static Bitmap LoadPPM6(char* filepath, float gamma = 2.2);
 protected:
 	std::vector<vec3*> d;
 	float gamma;
@@ -20,8 +22,8 @@ protected:
 	int height;
 };
 
-inline Bitmap::Bitmap(int width, int height, float gamma)
-	: width(width), height(height), gamma(gamma)
+inline Bitmap::Bitmap(int width, int height)
+	: width(width), height(height)
 {
 	for (int row = 0; row < height; ++row)
 	{
@@ -48,7 +50,7 @@ inline void Bitmap::SetPixel(int col, int row, const vec3& colour)
 	d[row][col] = colour;
 }
 
-inline void Bitmap::SaveAsPPM(char* filepath)
+inline void Bitmap::SaveAsPPM3(char* filepath, float gamma)
 {
 	std::ofstream output(filepath);
 
@@ -69,4 +71,75 @@ inline void Bitmap::SaveAsPPM(char* filepath)
 	}
 	output.close();
 
+}
+
+// Saves binary ppm file (magic number 6)
+inline void Bitmap::SaveAsPPM6(char* filepath, float gamma)
+{
+	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
+	ofs << "P6" << std::endl;
+	ofs << width << std::endl;
+	ofs << height << std::endl;
+	ofs << 255 << std::endl;
+
+	vec3 c;
+	unsigned char r, g, b;
+	for (int row = height - 1; row >= 0; --row)
+	{
+		for (int col = 0; col < width; ++col)
+		{
+			c = d[row][col];
+			c = c ^ gamma;
+			r = c[0] * 255;
+			g = c[1] * 255;
+			b = c[2] * 255;
+			ofs << r << g << b;
+		}
+	}
+
+	ofs.close();
+}
+
+// Loads binary ppm file (magic number 6)
+inline Bitmap Bitmap::LoadPPM6(char* filepath, float gamma)
+{
+	std::ifstream ifs(filepath, std::ios::binary | std::ios::in);
+
+	if (!ifs)
+	{
+		std::cerr << "LoadPPM: Could not open " << filepath << std::endl;
+	}
+	std::string format;
+	int Width, Height;
+	int MaxGray;
+	ifs >> format;
+	ifs >> Width >> Height;
+	ifs >> MaxGray;
+	Bitmap result(Width, Height);
+
+	std::string Line;
+	unsigned char buffer[3];
+
+	// eat whitespace
+	while (ifs.peek() == '\n' || ifs.peek() == ' ')
+	{
+		ifs.read((char*)(&buffer[0]), 1);
+	}
+	for (int row = Height - 1; row >= 0; --row)
+	{
+		for (int col = 0; col < Width; ++col)
+		{
+			ifs.read((char*)(&buffer[0]), sizeof(buffer));
+			int r = (int)(unsigned char)buffer[0];
+			int g = (int)(unsigned char)buffer[1];
+			int b = (int)(unsigned char)buffer[2];
+			//cout << r << " " << g << " " << b << endl;
+			vec3 pixel = vec3(r / (float)MaxGray, g / (float)MaxGray, b / (float)MaxGray) ^ gamma;
+			result.SetPixel(col, row, pixel);
+
+		}
+	}
+
+	ifs.close();
+	return result;
 }

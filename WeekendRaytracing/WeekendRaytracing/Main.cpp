@@ -61,7 +61,7 @@ hitable** random_scene(int& size)
 vec3 colour(const ray& r, hitable* world, int depth)
 {
 	hit_record rec;
-	if (world->hit(r, 1e-5f, INFINITY, rec))
+	if (world->hit(r, 1e-4f, INFINITY, rec))
 	{
 		ray scattered_ray;
 		vec3 attenuation;
@@ -81,11 +81,10 @@ vec3 colour(const ray& r, hitable* world, int depth)
 
 int main()
 {
-	int nx = 200;
-	int ny = 100;
+	int nx = 600;
+	int ny = 300;
 	int ns = 100;
-	Bitmap bitmap(nx, ny, 1 / 2.2);
-
+	Bitmap bitmap(nx, ny);
 	int size;
 	hitable** scene = random_scene(size);
 	hitable* world = new bvh_node(scene, size, 0, 1);
@@ -116,6 +115,6 @@ int main()
 	
 	timer.Stop();
 	std::cout << timer.GetElapsedSeconds() << std::endl;
-	bitmap.SaveAsPPM("image1.ppm");
+	bitmap.SaveAsPPM6("image1.ppm");
 	return 0;
 }
