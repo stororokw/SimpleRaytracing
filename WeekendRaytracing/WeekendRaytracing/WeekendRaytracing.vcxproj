@@ -118,6 +118,8 @@
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="BVH.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CheckerTexture.h" />
+    <ClInclude Include="ConstantTexture.h" />
     <ClInclude Include="Dielectric.h" />
     <ClInclude Include="Hitable.h" />
     <ClInclude Include="HitableList.h" />
@@ -128,6 +130,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RNG.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>

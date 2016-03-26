@@ -15,12 +15,30 @@
 #include "Bitmap.h"
 #include "omp.h"
 #include "Timer.h"
+#include "ConstantTexture.h"
+#include "CheckerTexture.h"
+
+hitable** two_spheres(int& size)
+{
+	texture* green = new constant_texture(vec3(0.2, 0.3, 0.1));
+	texture* gray = new constant_texture(vec3(0.9, 0.9, 0.9));
+
+	texture* checker = new checker_texture(green, gray);
+	int n = 2;
+	hitable** list = new hitable*[n];
+	list[0] = new sphere(vec3(0, -10, 0), 10, new lambertian(checker));
+	list[1] = new sphere(vec3(0,  10, 0), 10, new lambertian(checker));
+	size = n;
+	return list;
+}
 
 hitable** random_scene(int& size)
 {
 	int n = 500;
 	hitable** list = new hitable*[n + 1];
-	list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5, 0.5, 0.5)));
+	texture* gray = new constant_texture(vec3(0.9, 0.9, 0.9));
+	texture* green = new constant_texture(vec3(0.2, 0.3, 0.1));
+	list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(new checker_texture(green, gray)));
 	int i = 1;
 	for (int a = -11; a < 11; ++a)
 	{
@@ -33,7 +51,8 @@ hitable** random_scene(int& size)
 				// diffuse
 				if (choose_mat < 0.8)
 				{
-					list[i++] = new sphere(center, 0.2, new lambertian(vec3(RNG::random() * RNG::random(), RNG::random() * RNG::random(), RNG::random() * RNG::random())));
+					texture* r = new constant_texture(vec3(RNG::random() * RNG::random(), RNG::random() * RNG::random(), RNG::random() * RNG::random()));
+					list[i++] = new sphere(center, 0.2, new lambertian(r));
 				}
 				else if (choose_mat < 0.95)
 				{
@@ -51,8 +70,9 @@ hitable** random_scene(int& size)
 		}
 	}
 
+	texture* d = new constant_texture(vec3(0.4, 0.2, 0.1));
 	list[i++] = new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5));
-	list[i++] = new sphere(vec3(-4, 1, 0), 1.0, new lambertian(vec3(0.4, 0.2, 0.1)));
+	list[i++] = new sphere(vec3(-4, 1, 0), 1.0, new lambertian(d));
 	list[i++] = new sphere(vec3(4, 1, 0), 1.0, new metal(vec3(0.7, 0.6, 0.5), 0));
 	size = i;
 	return list;
@@ -86,11 +106,11 @@ int main()
 	int ns = 100;
 	Bitmap bitmap(nx, ny);
 	int size;
-	hitable** scene = random_scene(size);
+	//hitable** scene = random_scene(size);
+	hitable** scene = two_spheres(size);
 	hitable* world = new bvh_node(scene, size, 0, 1);
 
-	//camera cam(vec3(-2,2,1),vec3(0,0,-1),vec3(0,1,0), 15, float(nx)/ ny);
-	camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);
+	camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);	
 	omp_set_nested(1);
 	Timer timer;
 	timer.Start();
