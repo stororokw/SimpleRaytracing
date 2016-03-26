@@ -12,6 +12,47 @@
 #include "Dielectric.h"
 #include "MovingSphere.h"
 
+hitable* random_scene()
+{
+	int n = 500;
+	hitable** list = new hitable*[n + 1];
+	list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5, 0.5, 0.5)));
+	int i = 1;
+	for (int a = -11; a < 11; ++a)
+	{
+		for (int b = -11; b < 11; ++b)
+		{
+			float choose_mat = RNG::random();
+			vec3 center(a + 0.9 * RNG::random(), 0.2, b + 0.9 * RNG::random());
+			if ((center - vec3(4, 0.2, 0)).length() > 0.9)
+			{
+				// diffuse
+				if (choose_mat < 0.8)
+				{
+					list[i++] = new sphere(center, 0.2, new lambertian(vec3(RNG::random() * RNG::random(), RNG::random() * RNG::random(), RNG::random() * RNG::random())));
+				}
+				else if (choose_mat < 0.95)
+				{
+					// metal
+					list[i++] = new sphere(center, 0.2, new metal(vec3(0.5 * (1 + RNG::random()),
+																  0.5 * (1 + RNG::random()),
+																  0.5 * (1 + RNG::random())), 0.5 * RNG::random()));
+				}
+				else
+				{
+					// glass
+					list[i++] = new sphere(center, 0.2, new dielectric(1.5));
+				}
+			}
+		}
+	}
+
+	list[i++] = new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5));
+	list[i++] = new sphere(vec3(-4, 1, 0), 1.0, new lambertian(vec3(0.4, 0.2, 0.1)));
+	list[i++] = new sphere(vec3(4, 1, 0), 1.0, new metal(vec3(0.7, 0.6, 0.5), 0));
+	return new hitable_list(list, i);
+}
+
 vec3 colour(const ray& r, hitable* world, int depth)
 {
 	hit_record rec;
@@ -45,15 +86,9 @@ int main()
 	vec3 vertical(0.0f, 2.0f, 0.0f);
 	vec3 origin(0.0f, 0.0f, 0.0f);
 
-	hitable* geometry[4];
-	geometry[0] = new moving_sphere(vec3(0, 0, -1), vec3(2,0,-1), 0, 1, 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
-	geometry[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
-	geometry[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.3));
-	geometry[3] = new sphere(vec3(-1, 0, -1), 0.5, new dielectric(1.5));
-
-	hitable* world = new hitable_list(geometry, 4);
+	hitable* world = random_scene();
 	//camera cam(vec3(-2,2,1),vec3(0,0,-1),vec3(0,1,0), 15, float(nx)/ ny);
-	camera cam(vec3(3, 3, 2), vec3(0, 0, -1), vec3(0, 1, 0), 20, float(nx) / ny, 2.0, (vec3(3,3,2) - vec3(0,0,-1)).length(), 0, 1);
+	camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);
 	output << "P3\n" << nx << " " << ny << "\n255\n";
 	for (int row = ny - 1; row >= 0; --row)
 	{
