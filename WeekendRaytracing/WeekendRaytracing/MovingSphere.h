@@ -10,7 +10,7 @@ public:
 
 	moving_sphere(vec3 center, vec3 center1, float t0, float t1, float radius, material* mat_ptr);
 	vec3 center(float time) const;
-	bool hit(const ray& ray, float t_min, float t_max, hit_record& rec) const override;
+	bool hit(const ray& ray, float & t_min, float & t_max, hit_record& rec) const override;
 private:
 	vec3 center0, center1;
 	float radius;
@@ -39,7 +39,7 @@ inline vec3 moving_sphere::center(float time) const
 	return center0 + ((time - time0) / (time1 - time0) * (center1 - center0));
 }
 
-inline bool moving_sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
+inline bool moving_sphere::hit(const ray& r, float & t_min, float & t_max, hit_record& rec) const
 {
 	vec3 oc = r.origin() - center(r.time());
 	float a = dot(r.direction(), r.direction());

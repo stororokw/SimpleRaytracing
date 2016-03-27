@@ -20,6 +20,7 @@
 #include "ImageTexture.h"
 #include "EmitterMaterial.h"
 #include "Rectangle.h"
+#include "Mesh.h"
 
 hitable** simple_light(int& size)
 {
@@ -101,12 +102,14 @@ hitable** random_scene(int& size)
 vec3 colour(const ray& r, hitable* world, int depth)
 {
 	hit_record rec;
-	if (world->hit(r, 1e-4f, INFINITY, rec))
+	float t_min = 1e-4f;
+	float t_max = INFINITY;
+	if (world->hit(r, t_min, t_max, rec))
 	{
 		ray scattered_ray;
 		vec3 attenuation;
 		vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
-		if (depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered_ray))
+		if (depth < 10 && rec.mat_ptr->scatter(r, rec, attenuation, scattered_ray))
 		{
 			return emitted + attenuation * colour(scattered_ray, world, depth + 1);
 		} 
@@ -126,21 +129,42 @@ vec3 colour(const ray& r, hitable* world, int depth)
 
 int main()
 {
-	int nx = 600;
-	int ny = 300;
-	int ns = 100;
+	Timer timer;
+	int nx = 512;
+	int ny = 512;
+	int ns = 512;
 	Bitmap bitmap(nx, ny);
 	int size;
 	//hitable** scene = random_scene(size);
 	//hitable** scene = two_spheres(size);
 	hitable** scene = simple_light(size);
-	hitable* world = new bvh_node(scene, size, 0, 1);
+	mesh* left_wall = mesh::LoadMesh("left_wall.obj", new lambertian(new constant_texture(vec3(150 / 255.0, 14 / 255.0, 0))));
+	mesh* right_wall = mesh::LoadMesh("right_wall.obj", new lambertian(new constant_texture(vec3(38 / 255.0, 101 / 255.0, 21 / 255.0))));
+	mesh* bottom_floor = mesh::LoadMesh("bottom_floor.obj", new lambertian(new constant_texture(vec3(1, 1, 1))));
+	mesh* top_ceiling = mesh::LoadMesh("top_ceiling.obj", new lambertian(new constant_texture(vec3(1, 1, 1))));
+	mesh* small_box = mesh::LoadMesh("small_box.obj", new lambertian(new constant_texture(vec3(1, 1, 1))));
+	mesh* large_box = mesh::LoadMesh("large_box.obj", new lambertian(new constant_texture(vec3(1, 1, 1))));
+	mesh* back_wall = mesh::LoadMesh("back_wall.obj", new lambertian(new constant_texture(vec3(1, 1, 1))));
+	mesh* light = mesh::LoadMesh("light.obj", new emitter_material(new constant_texture(9 * vec3(255 / 255.0, 178 / 255.0, 69 / 255.0))));
 
+	timer.Start();
+	hitable** l = new hitable*[7];
+	l[0] = left_wall;
+	l[1] = right_wall;
+	l[2] = bottom_floor;
+	l[3] = top_ceiling;
+	l[4] = back_wall;
+	l[5] = light;
+	l[6] = small_box;
+	l[7] = large_box;
+	timer.Stop();
+	std::cout << "Took " << timer.GetElapsedSeconds() << " to load meshes." << std::endl;
+	hitable* world = new bvh_node(l, 7, 0, 1);
 	//camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);
 	// camera for simple_light
-	camera cam(vec3(13, 2, 20), vec3(0, 0, 0), vec3(0, 1, 0), 40, float(nx) / ny, 0, 10, 0, 1);
+	//camera cam(vec3(13, 2, 20), vec3(0, 0, 0), vec3(0, 1, 0), 40, float(nx) / ny, 0, 10, 0, 1);
+	camera cam(vec3(278, 273, -800), vec3(278, 273, -799), vec3(0, 1, 0), 39.3077, float(nx) / ny, 0, 10, 0, 1);
 	omp_set_nested(1);
-	Timer timer;
 	timer.Start();
 
 #pragma omp parallel for schedule(dynamic, 1)

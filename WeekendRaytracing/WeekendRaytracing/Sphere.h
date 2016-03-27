@@ -12,7 +12,7 @@ public:
 
 	sphere(vec3 center, float radius, material* mat_ptr);
 
-	bool hit(const ray& ray, float t_min, float t_max, hit_record& rec) const override;
+	bool hit(const ray& ray, float & t_min, float & t_max, hit_record& rec) const override;
 	bool bounding_box(float t0, float t1, aabb& box) const override;
 
 private:
@@ -32,7 +32,7 @@ inline sphere::sphere(vec3 center, float radius, material* mat_ptr)
 	  mat_ptr(mat_ptr)
 {}
 
-inline bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
+inline bool sphere::hit(const ray& r, float & t_min, float & t_max, hit_record& rec) const
 {
 	vec3 oc = r.origin() - center;
 	float a = dot(r.direction(), r.direction());

@@ -7,7 +7,7 @@ class rectangle : public hitable
 {
 public:
 	rectangle(float x0, float x1, float y0, float y1, float k, material* mat);
-	bool hit(const ray& ray, float t_min, float t_max, hit_record& rec) const override;
+	bool hit(const ray& ray, float & t_min, float & t_max, hit_record& rec) const override;
 	bool bounding_box(float t0, float t1, aabb& box) const override;
 
 protected:
@@ -26,7 +26,7 @@ inline rectangle::rectangle(float x0, float x1, float y0, float y1, float k, mat
 
 }
 
-inline bool rectangle::hit(const ray& ray, float t_min, float t_max, hit_record& rec) const
+inline bool rectangle::hit(const ray& ray, float & t_min, float & t_max, hit_record& rec) const
 {
 	// find where it hits z axis
 	float t = (k - ray.origin().z()) / ray.direction().z();

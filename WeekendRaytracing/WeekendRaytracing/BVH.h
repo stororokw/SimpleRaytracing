@@ -9,7 +9,7 @@ public:
 	bvh_node();
 	bvh_node(hitable** l, int n, float time0, float time1);
 	
-	virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const override;
+	virtual bool hit(const ray& r, float & tmin, float & tmax, hit_record& rec) const override;
 	bool bounding_box(float t0, float t1, aabb& box) const override;
 
 protected:
@@ -47,6 +47,7 @@ public:
 };
 
 inline bvh_node::bvh_node(hitable** l, int n, float time0, float time1)
+	: left(nullptr), right(nullptr)
 {
 	aabb* boxes = new aabb[n];
 	float* left_area = new float[n];
@@ -119,7 +120,7 @@ inline bvh_node::bvh_node(hitable** l, int n, float time0, float time1)
 	box = main_box;
 }
 
-inline bool bvh_node::hit(const ray& r, float tmin, float tmax, hit_record& rec) const
+inline bool bvh_node::hit(const ray& r, float & tmin, float & tmax, hit_record& rec) const
 {
 	if (box.hit(r, tmin, tmax))
 	{

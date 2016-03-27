@@ -19,20 +19,10 @@ public:
 	bool hit(const ray& r, float tmin, float tmax) const;
 	int longest_axis();
 	float area();
-
+	aabb operator+(const vec3& p) const;
 	// returns the union of the two boxes
-	static aabb surrounding_box(const aabb& box0, const aabb& box1)
-	{
-		vec3 small( fminf(box0.min()[0], box1.min()[0]),
-					fminf(box0.min()[1], box1.min()[1]),
-					fminf(box0.min()[2], box1.min()[2]));
-		vec3 large( fmaxf(box0.max()[0], box1.max()[0]),
-					fmaxf(box0.max()[1], box1.max()[1]),
-					fmaxf(box0.max()[2], box1.max()[2]));
-		return aabb(small, large);
-	}
+	static aabb surrounding_box(const aabb& box0, const aabb& box1);
 
-protected:
 	vec3 _min;
 	vec3 _max;
 };
@@ -74,7 +64,7 @@ inline bool aabb::hit(const ray& r, float tmin, float tmax) const
 		// check intervals
 		tmin = t0 > tmin ? t0 : tmin;
 		tmax = t1 < tmax ? t1 : tmax;
-		if (tmax < tmin)
+		if (tmax <= tmin)
 			return false;
 	}
 	return true;
@@ -83,15 +73,17 @@ inline bool aabb::hit(const ray& r, float tmin, float tmax) const
 inline int aabb::longest_axis()
 {
 	vec3 axis = _max - _min;
-	float maxAxisValue = fmaxf(fabsf(axis[0]), fmaxf(fabsf(axis[1]), fabsf(axis[1])));
+	float maxAxisValue = -INFINITY;
+	int maxIndex = 0;
 	for (int i = 0; i < 3; ++i)
 	{
-		if (axis[i] == maxAxisValue)
+		if (fabsf(axis[i]) > maxAxisValue)
 		{
-			return i;
+			maxAxisValue = fabsf(axis[i]);
+			maxIndex = i;
 		}
 	}
-	return 0;
+	return maxIndex;
 }
 
 inline float aabb::area()
@@ -100,4 +92,28 @@ inline float aabb::area()
 	float y = _max[1] - _min[1];
 	float z = _max[2] - _min[2];
 	return 2 * (x * y + x * z + z * y);
+}
+
+inline aabb aabb::operator+(const vec3& p) const
+{
+	aabb result;
+	result._min[0] = (fminf(p[0], min()[0]));
+	result._min[1] = (fminf(p[1], min()[1]));
+	result._min[2] = (fminf(p[2], min()[2]));
+	result._max[0] = (fmaxf(p[0], max()[0]));
+	result._max[1] = (fmaxf(p[1], max()[1]));
+	result._max[2] = (fmaxf(p[2], max()[2]));
+
+	return result;
+}
+
+inline aabb aabb::surrounding_box(const aabb& box0, const aabb& box1)
+{
+	vec3 small( fminf(box0.min()[0], box1.min()[0]),
+	            fminf(box0.min()[1], box1.min()[1]),
+	            fminf(box0.min()[2], box1.min()[2]));
+	vec3 large( fmaxf(box0.max()[0], box1.max()[0]),
+	            fmaxf(box0.max()[1], box1.max()[1]),
+	            fmaxf(box0.max()[2], box1.max()[2]));
+	return aabb(small, large);
 }
