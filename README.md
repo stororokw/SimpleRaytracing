@@ -6,3 +6,4 @@ Following Peter Shirley's new series of books on ray tracing
 
 ![alt text](screenshots/weekend-raytacing-cornell.jpg "Cornell Box")
 ![alt text](screenshots/weekend-raytacing-dragon.jpg "Dragon caustics")
+![alt text](screenshots/weekend-raytacing-volume.jpg "Dragon caustics")

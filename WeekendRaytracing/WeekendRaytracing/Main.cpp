@@ -21,6 +21,7 @@
 #include "EmitterMaterial.h"
 #include "Rectangle.h"
 #include "Mesh.h"
+#include "ConstantMedium.h"
 
 hitable** simple_light(int& size)
 {
@@ -148,18 +149,18 @@ int main()
 	mesh* light = mesh::LoadMesh("light.obj", new emitter_material(new constant_texture(9 * vec3(255 / 255.0, 178 / 255.0, 69 / 255.0))));
 
 	timer.Start();
-	hitable** l = new hitable*[7];
+	hitable** l = new hitable*[8];
 	l[0] = left_wall;
 	l[1] = right_wall;
 	l[2] = bottom_floor;
 	l[3] = top_ceiling;
 	l[4] = back_wall;
 	l[5] = light;
-	l[6] = small_box;
-	l[7] = large_box;
+	l[6] = new constant_medium(small_box->AsBVH(), 0.01, new constant_texture(vec3(1, 1, 1)));
+	l[7] = new constant_medium(large_box->AsBVH(), 0.01, new constant_texture(vec3(0, 0, 0)));
 	timer.Stop();
 	std::cout << "Took " << timer.GetElapsedSeconds() << " to load meshes." << std::endl;
-	hitable* world = new bvh_node(l, 7, 0, 1);
+	hitable* world = new hitable_list(l, 8);
 	//camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);
 	// camera for simple_light
 	//camera cam(vec3(13, 2, 20), vec3(0, 0, 0), vec3(0, 1, 0), 40, float(nx) / ny, 0, 10, 0, 1);

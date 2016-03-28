@@ -120,12 +120,14 @@
     <ClInclude Include="BVH.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CheckerTexture.h" />
+    <ClInclude Include="ConstantMedium.h" />
     <ClInclude Include="ConstantTexture.h" />
     <ClInclude Include="Dielectric.h" />
     <ClInclude Include="EmitterMaterial.h" />
     <ClInclude Include="Hitable.h" />
     <ClInclude Include="HitableList.h" />
     <ClInclude Include="ImageTexture.h" />
+    <ClInclude Include="isotropic.h" />
     <ClInclude Include="lambertian.h" />
     <ClInclude Include="Mapping.h" />
     <ClInclude Include="Material.h" />
