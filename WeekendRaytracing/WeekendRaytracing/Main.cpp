@@ -133,7 +133,7 @@ int main()
 	Timer timer;
 	int nx = 512;
 	int ny = 512;
-	int ns = 512;
+	int ns = 32;
 	Bitmap bitmap(nx, ny);
 	int size;
 	//hitable** scene = random_scene(size);
@@ -150,17 +150,17 @@ int main()
 
 	timer.Start();
 	hitable** l = new hitable*[8];
-	l[0] = left_wall;
-	l[1] = right_wall;
-	l[2] = bottom_floor;
-	l[3] = top_ceiling;
-	l[4] = back_wall;
-	l[5] = light;
+	l[0] = left_wall->AsBVH();
+	l[1] = right_wall->AsBVH();
+	l[2] = bottom_floor->AsBVH();
+	l[3] = top_ceiling->AsBVH();
+	l[4] = back_wall->AsBVH();
+	l[5] = light->AsBVH();
 	l[6] = new constant_medium(small_box->AsBVH(), 0.01, new constant_texture(vec3(1, 1, 1)));
 	l[7] = new constant_medium(large_box->AsBVH(), 0.01, new constant_texture(vec3(0, 0, 0)));
 	timer.Stop();
 	std::cout << "Took " << timer.GetElapsedSeconds() << " to load meshes." << std::endl;
-	hitable* world = new hitable_list(l, 8);
+	hitable* world = new bvh_node(l, 8, 0, 1);
 	//camera cam(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0), 20, float(nx) / ny, 0, 10, 0, 1);
 	// camera for simple_light
 	//camera cam(vec3(13, 2, 20), vec3(0, 0, 0), vec3(0, 1, 0), 40, float(nx) / ny, 0, 10, 0, 1);

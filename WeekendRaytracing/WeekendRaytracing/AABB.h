@@ -50,6 +50,7 @@ inline vec3 aabb::max() const
 
 inline bool aabb::hit(const ray& r, float tmin, float tmax) const
 {
+	
 	for (int a = 0; a < 3; ++a)
 	{
 		float invD = 1.0f / r.direction()[a];
@@ -57,15 +58,18 @@ inline bool aabb::hit(const ray& r, float tmin, float tmax) const
 		float t0 = (min()[a] - r.origin()[a]) * invD;
 		float t1 = (max()[a] - r.origin()[a]) * invD;
 		// ray is in opposite direction
-		if (invD < 0.0f)
+		if (t0 > t1)
 		{
 			std::swap(t0, t1);
 		}
 		// check intervals
 		tmin = t0 > tmin ? t0 : tmin;
 		tmax = t1 < tmax ? t1 : tmax;
-		if (tmax <= tmin)
+		if (tmin > tmax)
 			return false;
+		if (tmax < 0.0f)
+			return false;
+		
 	}
 	return true;
 }
